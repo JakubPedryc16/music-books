@@ -2,3 +2,6 @@ fastapi[standard]==0.111.0
 uvicorn[standard]==0.29.0
 sqlalchemy==2.0.30
 aiosqlite==0.20.0
+alembic==1.11.1
+databases==0.6.0
+pydantic==1.10.12
