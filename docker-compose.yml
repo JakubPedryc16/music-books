@@ -8,5 +8,5 @@ services:
     volumes:
       - ./backend/src:/app/src
       - ./backend/requirements.txt:/app/requirements.txt
-      - ./data:/app/data 
+      - ./backend/data:/app/data 
     restart: unless-stopped

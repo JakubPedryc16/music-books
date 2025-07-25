@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.models import *
+from src.models import Book, Music, Tag, book_tag_association, music_tag_association
 from src.db.database import Base
 target_metadata = Base.metadata
 

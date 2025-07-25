@@ -15,3 +15,4 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/")
 def read_root():
     return {"message": "SQLite is connected"}
+

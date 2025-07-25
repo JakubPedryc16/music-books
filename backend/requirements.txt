@@ -1,7 +1,40 @@
-fastapi[standard]==0.111.0
-uvicorn[standard]==0.29.0
-sqlalchemy==2.0.30
-aiosqlite==0.20.0
-alembic==1.11.1
-databases==0.6.0
-pydantic==1.10.12
+# -------------------------------
+# Web framework & ASGI server
+# -------------------------------
+fastapi[standard]==0.111.0      # Nowoczesny framework do budowy API w Pythonie
+uvicorn[standard]==0.29.0       # Lekki serwer ASGI do uruchamiania aplikacji FastAPI
+
+# -------------------------------
+# Baza danych i ORM
+# -------------------------------
+sqlalchemy==2.0.30              # ORM do pracy z relacyjnymi bazami danych
+alembic==1.11.1                 # Migracje bazy danych dla SQLAlchemy
+databases==0.6.0                # Asynchroniczna warstwa do pracy z bazami w SQLAlchemy
+
+# -------------------------------
+# Walidacja danych i modele
+# -------------------------------
+pydantic==1.10.12               # Walidacja danych i modelowanie (używany w FastAPI)
+
+# -------------------------------
+# Praca z muzyką
+# -------------------------------
+lyricsgenius==3.0.1             # API do pobierania tekstów piosenek z Genius
+
+# -------------------------------
+# Dane, analiza, ładowanie
+# -------------------------------
+pandas==2.2.2                   # Przetwarzanie danych w DataFrame'ach
+tqdm==4.66.4                    # Prosty pasek postępu (dla pętli i operacji)
+
+# -------------------------------
+# Web scraping i pobieranie
+# -------------------------------
+httpx==0.27.0                   # Asynchroniczny klient HTTP (alternatywa dla requests)
+beautifulsoup4==4.12.3          # Parsowanie HTML/XML (web scraping)
+aiofiles==23.2.1                # Asynchroniczne operacje na plikach
+
+python-dotenv==1.0.1            # .env library 
+
+spotipy>=2.23.0                 # Spotify API support
+

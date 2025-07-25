@@ -8,8 +8,13 @@ class Book(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    author = Column(String)
+    author = Column(String, index=True)
+    language = Column(String, index=True)
+    downloads = Column(Integer)
+    link = Column(String)
+    file_name = Column(String)
     embedding = Column(LargeBinary)
+
 
     tags = relationship(
         "Tag",

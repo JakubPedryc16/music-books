@@ -250,3 +250,5 @@ yarn.lock
 # ====== Docker (jeśli chcesz) ======
 # Nie zawsze, ale czasem
 docker-compose.override.yml
+
+/backend/data/
