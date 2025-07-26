@@ -38,14 +38,16 @@ async def load_music_metadata():
             duration_ms=row.get("duration_ms"),
             popularity=row.get("track_popularity"),
 
-            danceability=row.get("danceability"),
-            energy=row.get("energy"),
-            valence=row.get("valence"),
-            tempo=row.get("tempo"),
-            acousticness=row.get("acousticness"),
-            instrumentalness=row.get("instrumentalness"),
-            liveness=row.get("liveness"),
-            speechiness=row.get("speechiness"),
+            spotify_features = {
+                "danceability": row.get("danceability"),
+                "energy": row.get("energy"),
+                "valence": row.get("valence"),
+                "tempo": row.get("tempo"),
+                "acousticness": row.get("acousticness"),
+                "instrumentalness": row.get("instrumentalness"),
+                "liveness":row.get("liveness"),
+                "speechiness": row.get("speechiness")
+            }
         )
 
         music_list.append(music)

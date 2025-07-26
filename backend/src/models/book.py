@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, LargeBinary, String
+from sqlalchemy import JSON, Column, Integer, LargeBinary, String
 from src.db.database import Base
 from sqlalchemy.orm import relationship
 from src.models.associations import book_tag_association
@@ -13,8 +13,12 @@ class Book(Base):
     downloads = Column(Integer)
     link = Column(String)
     file_name = Column(String)
-    embedding = Column(LargeBinary)
+    
+    embedding = Column(LargeBinary, nullable=True)
+    embedding_tags = Column(JSON, nullable=True)
 
+
+    fragments = relationship("BookFragment", back_populates="book", cascade="all, delete-orphan")
 
     tags = relationship(
         "Tag",
