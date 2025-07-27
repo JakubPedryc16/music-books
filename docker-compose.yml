@@ -9,4 +9,5 @@ services:
       - ./backend/src:/app/src
       - ./backend/requirements.txt:/app/requirements.txt
       - ./backend/data:/app/data 
+      - ./backend/main.py:/app/main.py
     restart: unless-stopped

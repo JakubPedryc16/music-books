@@ -38,3 +38,15 @@ python-dotenv==1.0.1            # .env library
 
 spotipy>=2.23.0                 # Spotify API support
 
+
+# -------------------------------
+# NLP / Embedding / Zero-shot
+# -------------------------------
+transformers==4.41.1            # Modele transformers (zero-shot, embeddingi)
+torch==2.3.0                    # Backend do transformers
+scikit-learn==1.5.0             # PCA, metryki itp.
+numpy==1.26.4                   # Operacje macierzowe i numeryczne
+orjson==3.10.3                  # Szybka serializacja JSON (np. do tag_embedding)
+sentence-transformers==2.6.1
+
+chardet==5.1.0

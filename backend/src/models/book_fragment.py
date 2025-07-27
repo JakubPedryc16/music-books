@@ -10,4 +10,4 @@ class BookFragment(Base):
     embedding = Column(LargeBinary)
     tag_embedding = Column(JSON, nullable=True)
 
-book = relationship("Book", back_populates="fragments")
+    book = relationship("Book", back_populates="fragments")
