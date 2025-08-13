@@ -1,8 +1,8 @@
 import asyncio
 import httpx
 from sqlalchemy import select
-from src.db.db_async import AsyncSessionLocal
-from src.models.book import Book
+from app.db.db_async import AsyncSessionLocal
+from app.models.book import Book
 
 API_LIST_URL = "https://gutendex.com/books/?limit=100"
 

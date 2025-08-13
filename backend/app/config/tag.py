@@ -1,4 +1,4 @@
-# src/config/tags.py
+# app/config/tags.py
 
 TAGS = [
     # Emocje i nastroje

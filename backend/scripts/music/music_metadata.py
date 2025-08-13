@@ -3,8 +3,8 @@ import pandas as pd
 from dotenv import load_dotenv
 
 from sqlalchemy import select
-from src.db.db_async import AsyncSessionLocal
-from src.models.music import Music
+from app.db.db_async import AsyncSessionLocal
+from app.models.music import Music
 
 load_dotenv()
 

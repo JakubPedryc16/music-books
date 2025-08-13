@@ -1,9 +1,9 @@
 
 from sqlalchemy import Column, Integer, String
-from src.db.database import Base
+from app.db.database import Base
 
 from sqlalchemy.orm import relationship
-from src.models.associations import music_tag_association, book_tag_association
+from app.models.associations import music_tag_association, book_tag_association
 
 
 class Tag(Base):

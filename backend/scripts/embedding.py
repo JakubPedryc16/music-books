@@ -2,7 +2,7 @@ from transformers import pipeline
 from sentence_transformers import SentenceTransformer 
 import numpy as np
 
-from src.services.spotify_features import spotify_features_to_text
+from backend.scripts.spotify_features import spotify_features_to_text
 
 
 classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
@@ -21,8 +21,3 @@ def create_tag_embedding_with_spotify(text: str, spotify_features: dict, candida
     spotify_desc = spotify_features_to_text(spotify_features)
     full_text = f"{text.strip()}\n\n{spotify_desc.strip()}"
     return create_tag_embedding(full_text, candidate_labels)
-
-def split_text_into_fragments(text: str, max_words: int = 500):
-    words = text.split()
-    fragments = [' '.join(words[i:i+max_words]) for i in range(0, len(words), max_words)]
-    return fragments

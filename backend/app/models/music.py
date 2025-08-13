@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Column, Integer, LargeBinary, String, Text, Float
 from sqlalchemy.orm import relationship
-from src.models.associations import music_tag_association
-from src.db.database import Base
+from app.models.associations import music_tag_association
+from app.db.database import Base
 
 class Music(Base):
     __tablename__ = "music"

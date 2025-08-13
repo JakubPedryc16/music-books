@@ -4,9 +4,9 @@ import aiofiles
 import httpx
 from sqlalchemy import update
 from sqlalchemy.future import select
-from src.db.db_async import AsyncSessionLocal
-from src.models.book import Book
-from src.utils.logger import logger
+from app.db.db_async import AsyncSessionLocal
+from app.models.book import Book
+from app.utils.logger import logger
 
 TEXT_DIR = "data/books/files/"
 

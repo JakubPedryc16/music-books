@@ -1,7 +1,7 @@
 
 from sqlalchemy import Column, ForeignKey, Integer, Table
 
-from src.db.database import Base
+from app.db.database import Base
 
 
 book_tag_association = Table(

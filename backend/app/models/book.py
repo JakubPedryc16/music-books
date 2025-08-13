@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Column, Integer, LargeBinary, String
-from src.db.database import Base
+from app.db.database import Base
 from sqlalchemy.orm import relationship
-from src.models.associations import book_tag_association
+from app.models.associations import book_tag_association
 
 class Book(Base):
     __tablename__ = "books"
