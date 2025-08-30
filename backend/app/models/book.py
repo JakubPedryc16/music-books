@@ -14,14 +14,3 @@ class Book(Base):
     link = Column(String)
     file_name = Column(String)
     
-    embedding = Column(LargeBinary, nullable=True)
-    embedding_tags = Column(JSON, nullable=True)
-
-
-    fragments = relationship("BookFragment", back_populates="book", cascade="all, delete-orphan")
-
-    tags = relationship(
-        "Tag",
-        secondary=book_tag_association,
-        back_populates="books"
-    )

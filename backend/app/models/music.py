@@ -17,6 +17,7 @@ class Music(Base):
 
     embedding = Column(LargeBinary, nullable=True)
     embedding_tags = Column(JSON, nullable=True)
+    embedding_emotions = Column(JSON, nullable=True)
     spotify_features = Column(JSON, nullable=True)
 
     tags = relationship(

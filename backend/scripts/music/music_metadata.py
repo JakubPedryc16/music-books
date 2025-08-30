@@ -1,15 +1,16 @@
 import asyncio
 import pandas as pd
 from dotenv import load_dotenv
-
 from sqlalchemy import select
+from langdetect import detect, DetectorFactory
 from app.db.db_async import AsyncSessionLocal
 from app.models.music import Music
 
 load_dotenv()
+DetectorFactory.seed = 0 
 
-MUSIC_DIR = "data/music/spotify_songs.csv"
-MAX_SONGS = 100
+MUSIC_DIR = "data/music/spotify_songs2.csv"
+MAX_SONGS = 20000
 
 async def load_music_metadata():
     async with AsyncSessionLocal() as session:
@@ -18,34 +19,45 @@ async def load_music_metadata():
 
     df = pd.read_csv(MUSIC_DIR)
 
-    df = df.head(MAX_SONGS)
-
     music_list = []
 
     for _, row in df.iterrows():
-        title = row["track_name"]
-        author = row["track_artist"]
+        if len(existing_titles) >= MAX_SONGS:
+            break
+
+        title = row["name"]
+        author = row["artists"]
 
         if title in existing_titles:
             continue
 
+        lyrics = row.get("lyrics", "")
+
+        # Sprawdzenie języka tylko jeśli są teksty
+        if lyrics:
+            try:
+                if detect(lyrics) != "en":
+                    continue  # ignorujemy nieangielskie piosenki
+            except:
+                continue
+
         music = Music(
             title=title,
             author=author,
-            lyrics=row.get("lyrics", ""),
+            lyrics=lyrics,
 
-            spotify_id=row.get("track_id"),
+            spotify_id=row.get("id"),
             duration_ms=row.get("duration_ms"),
-            popularity=row.get("track_popularity"),
+            popularity=row.get("track_popularity", ""),
 
-            spotify_features = {
+            spotify_features={
                 "danceability": row.get("danceability"),
                 "energy": row.get("energy"),
                 "valence": row.get("valence"),
                 "tempo": row.get("tempo"),
                 "acousticness": row.get("acousticness"),
                 "instrumentalness": row.get("instrumentalness"),
-                "liveness":row.get("liveness"),
+                "liveness": row.get("liveness"),
                 "speechiness": row.get("speechiness")
             }
         )

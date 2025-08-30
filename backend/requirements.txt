@@ -50,3 +50,7 @@ orjson==3.10.3                  # Szybka serializacja JSON (np. do tag_embedding
 sentence-transformers==2.6.1
 
 chardet==5.1.0
+langdetect==1.0.9
+textblob==0.17.1
+
+nltk==3.8.1

@@ -17,9 +17,3 @@ class Tag(Base):
         secondary=music_tag_association,
         back_populates="tags"
     )
-
-    books = relationship(
-        "Book",
-        secondary=book_tag_association,
-        back_populates="tags"
-    )
