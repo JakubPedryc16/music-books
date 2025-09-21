@@ -1,20 +1,20 @@
 # -------------------------------
 # Web framework & ASGI server
 # -------------------------------
-fastapi[standard]==0.111.0      # Nowoczesny framework do budowy API w Pythonie
+fastapi[standard]==0.116.1      # Nowoczesny framework do budowy API w Pythonie
 uvicorn[standard]==0.29.0       # Lekki serwer ASGI do uruchamiania aplikacji FastAPI
 
 # -------------------------------
 # Baza danych i ORM
 # -------------------------------
-sqlalchemy==2.0.30              # ORM do pracy z relacyjnymi bazami danych
-alembic==1.11.1                 # Migracje bazy danych dla SQLAlchemy
-databases==0.6.0                # Asynchroniczna warstwa do pracy z bazami w SQLAlchemy
+sqlalchemy==2.0.43             # ORM do pracy z relacyjnymi bazami danych
+alembic==1.16.5               # Migracje bazy danych dla SQLAlchemy
+databases==0.9.0                # Asynchroniczna warstwa do pracy z bazami w SQLAlchemy
 
 # -------------------------------
 # Walidacja danych i modele
 # -------------------------------
-pydantic==1.10.12               # Walidacja danych i modelowanie (używany w FastAPI)
+pydantic==2.11.9             # Walidacja danych i modelowanie (używany w FastAPI)
 
 # -------------------------------
 # Praca z muzyką
@@ -24,7 +24,7 @@ lyricsgenius==3.0.1             # API do pobierania tekstów piosenek z Genius
 # -------------------------------
 # Dane, analiza, ładowanie
 # -------------------------------
-pandas==2.2.2                   # Przetwarzanie danych w DataFrame'ach
+pandas==2.3.2                   # Przetwarzanie danych w DataFrame'ach
 tqdm==4.66.4                    # Prosty pasek postępu (dla pętli i operacji)
 
 # -------------------------------
@@ -42,11 +42,12 @@ spotipy>=2.23.0                 # Spotify API support
 # -------------------------------
 # NLP / Embedding / Zero-shot
 # -------------------------------
-transformers==4.41.1            # Modele transformers (zero-shot, embeddingi)
-torch==2.3.0                    # Backend do transformers
-scikit-learn==1.5.0             # PCA, metryki itp.
-numpy==1.26.4                   # Operacje macierzowe i numeryczne
-orjson==3.10.3                  # Szybka serializacja JSON (np. do tag_embedding)
+tokenizers==0.22.0
+transformers==4.56.1           # Modele transformers (zero-shot, embeddingi)
+torch==2.8.0                    # Backend do transformers
+scikit-learn==1.7.0             # PCA, metryki itp.
+numpy==2.3.3                  # Operacje macierzowe i numeryczne
+orjson==3.11.3             # Szybka serializacja JSON (np. do tag_embedding)
 sentence-transformers==2.6.1
 
 chardet==5.1.0
@@ -54,3 +55,5 @@ langdetect==1.0.9
 textblob==0.17.1
 
 nltk==3.8.1
+
+aiosqlite==0.21.0

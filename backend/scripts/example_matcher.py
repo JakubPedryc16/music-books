@@ -93,6 +93,6 @@ if __name__ == "__main__":
 
     method_param = int(sys.argv[1])
     TEXT =  """ 
-meow meow meow meow meow meow meow cat cat meow meow meow"""
+NIGGA NIGGA NIGGA NIGGA NIGGA"""
     
     asyncio.run(test_book_matching_param(TEXT, method=method_param, top_n=5))

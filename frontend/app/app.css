@@ -1,0 +1,29 @@
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  font-family: 'Roboto', sans-serif;
+  background-color: white;
+  color: black;
+}
+
+  html, body, button, input, select, textarea {
+    font-family: 'Roboto', sans-serif;
+  }
+
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #1E2828;
+    color: white;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}

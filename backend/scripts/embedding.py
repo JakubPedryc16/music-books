@@ -10,7 +10,7 @@ from app.models.music import Music
 
 from scripts.ml_models.models import model, model_emotions, tokenizer, emotion_labels
 
-CONFIG_DIR = "backend/data/tags/"
+CONFIG_DIR = "data/tags/"
 os.makedirs(CONFIG_DIR, exist_ok=True)
 
 TAGS_FILE = os.path.join(CONFIG_DIR, "tags.json")

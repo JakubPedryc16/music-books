@@ -252,3 +252,13 @@ yarn.lock
 docker-compose.override.yml
 
 /backend/data/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Vite cache
+/node_modules/.vite
+
+# Local environment files
+.env
+.env.*.local

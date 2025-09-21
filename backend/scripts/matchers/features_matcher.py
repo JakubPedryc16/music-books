@@ -6,6 +6,19 @@ from scripts.embedding import predict_emotions_async
 
 import numpy as np
 import torch
+
+import nltk
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
+
+    import nltk
+try:
+    nltk.data.find("taggers/averaged_perceptron_tagger")
+except LookupError:
+    nltk.download('averaged_perceptron_tagger')
+
 from nltk import sent_tokenize, word_tokenize, pos_tag
 from sklearn.preprocessing import StandardScaler
 
