@@ -1,13 +1,13 @@
 import logging
 
 logger = logging.getLogger("music-books")
-logger.setLevel(logging.INFO)
+if not logger.hasHandlers():
+    logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setFormatter(logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    ))
+    logger.addHandler(ch)
+    logger.propagate = False
 
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter(
-    fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-))
-
-logger.addHandler(console_handler)
-logger.propagate = False 
+logger.info("Logger Loaded Properly")

@@ -25,3 +25,8 @@ class MusicDAL:
 
         result = await self.session.execute(query)
         return result.scalars().all()
+    
+    async def get_all_by_ids(self, ids: list[int]) -> list[Music]:
+        query = select(Music).where(Music.id.in_(ids))
+        result = await self.session.scalars(query)
+        return result.all()

@@ -1,6 +1,5 @@
 from sqlalchemy import JSON, Column, Integer, LargeBinary, String, Text, Float
 from sqlalchemy.orm import relationship
-from app.models.associations import music_tag_association
 from app.db.database import Base
 
 class Music(Base):
@@ -19,9 +18,3 @@ class Music(Base):
     embedding_tags = Column(JSON, nullable=True)
     embedding_emotions = Column(JSON, nullable=True)
     spotify_features = Column(JSON, nullable=True)
-
-    tags = relationship(
-        "Tag",
-        secondary=music_tag_association,
-        back_populates="music"
-    )
