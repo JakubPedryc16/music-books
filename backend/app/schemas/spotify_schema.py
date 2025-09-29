@@ -1,13 +1,12 @@
-from typing import List
 from pydantic import BaseModel
 
-class PlayRequest(BaseModel):
-    access_token: str
-    tracks_ids: List[str]
+from app.schemas.api_response import APIResponse
 
-class PlayResponse(BaseModel):
-    status: str
+class PlayResponseData(BaseModel):
     tracks_count: int
-    played_tracks: List[str]
+    played_tracks: list[str]
     
+class PlayResponse(APIResponse):
+    data: PlayResponseData
+
     

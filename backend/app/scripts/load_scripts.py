@@ -8,7 +8,7 @@ from app.api.dependencies import get_embedding_service, init_embedding_service
 
 async def process_music(service, music: Music, session):
     if not music.lyrics:
-        return 
+        return
 
     update_values = {}
 
@@ -17,9 +17,7 @@ async def process_music(service, music: Music, session):
         update_values["embedding"] = loaded_embedding.tobytes()
 
     if music.embedding_tags is None:
-        loaded_tag_embedding = await service.create_tag_embedding(
-            music.lyrics, music.spotify_features
-        )
+        loaded_tag_embedding = await service.create_tag_embedding(music.lyrics, music.spotify_features)
         update_values["embedding_tags"] = json.dumps(loaded_tag_embedding)
 
     if music.embedding_emotions is None:
@@ -28,9 +26,7 @@ async def process_music(service, music: Music, session):
 
     if update_values:
         await session.execute(
-            update(Music)
-            .where(Music.id == music.id)
-            .values(**update_values)
+            update(Music).where(Music.id == music.id).values(**update_values)
         )
 
 async def load_music_embeddings(service, batch_size: int = 50):
@@ -51,7 +47,7 @@ async def load_music_embeddings(service, batch_size: int = 50):
             ).all()
 
             if not music_batch:
-                break 
+                break
 
             await asyncio.gather(*(process_music(service, m, session) for m in music_batch))
             await session.commit()

@@ -7,7 +7,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.exceptions import SpotifyException
 from app.db.db_async import AsyncSession
 from app.models.user import User
-from app.schemas.spotify_schema import PlayResponse
+from app.schemas.spotify_schema import PlayResponse, PlayResponseData
 from app.utils.logger import logger
 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
@@ -26,8 +26,7 @@ def get_auth_url() -> str:
     return sp_oauth.get_authorize_url()
 
 def exchange_code_for_token(code: str) -> dict:
-    token_info = sp_oauth.get_access_token(code, as_dict=True)
-    return token_info
+    return sp_oauth.get_access_token(code, as_dict=True)
 
 def play_songs(access_token: str, song_uris: List[str]) -> PlayResponse:
     sp = Spotify(auth=access_token)
@@ -35,31 +34,30 @@ def play_songs(access_token: str, song_uris: List[str]) -> PlayResponse:
         devices = sp.devices().get("devices", [])
         if not devices:
             return PlayResponse(
-                status="no_active_device",
-                tracks_count=0,
-                played_tracks=[]
+                success=False,
+                error="no_active_device"
             )
         device_id = devices[0]["id"]
         sp.start_playback(device_id=device_id, uris=song_uris)
     except SpotifyException as e:
-        logger.error(f"Spotify API error: {e}")
+        logger.exception(f"Spotify API error: {e}")
         return PlayResponse(
-            status="error",
-            tracks_count=0,
-            played_tracks=[]
+            success=False,
+            error=str(e)
         )
     except Exception as e:
-        logger.error(f"Unexpected error while playing songs: {e}")
+        logger.exception(f"Unexpected error while playing songs: {e}")
         return PlayResponse(
-            status="error",
-            tracks_count=0,
-            played_tracks=[]
+            success=False,
+            error=str(e)
         )
 
     return PlayResponse(
-        status="playing",
-        tracks_count=len(song_uris),
-        played_tracks=song_uris
+        success=True,
+        data=PlayResponseData(
+            tracks_count=len(song_uris),
+            played_tracks=song_uris
+        )
     )
 
 def refresh_spotify_token(refresh_token: str) -> dict:

@@ -1,17 +1,15 @@
-from typing import List, Optional, TypedDict
+from typing import Optional
 from pydantic import BaseModel
 
-class SongResponse(BaseModel):
+from app.schemas.api_response import APIResponse
+
+class SongData(BaseModel):
     title: str
     author: str
     spotify_id: str
 
-class MatchedTracksResponse(BaseModel):
-    success: bool
-    tracks: List[SongResponse] 
-    error: Optional[str] = None
+class MatchedTracksResponse(APIResponse):
+    data: Optional[list[SongData]]
 
-class TranslationResult(TypedDict):
-    success: bool
-    text: str
-    error: Optional[str]
+class TranslationResponse(APIResponse):
+    data: str

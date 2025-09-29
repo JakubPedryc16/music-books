@@ -8,7 +8,7 @@ import jwt
 
 from app.dal.user_dal import UserDAL
 from app.models.user import User
-from app.schemas.spotify_schema import PlayResponse
+from app.schemas.spotify_schema import PlayResponse, PlayResponseData
 from app.services.spotify.spotify_service_helpers import get_valid_access_token, play_songs, exchange_code_for_token, get_auth_url
 
 JWT_SECRET = os.getenv("JWT_SECRET")
@@ -51,7 +51,7 @@ class SpotifyService:
     async def play_tracks(self, app_jwt: str, tracks_ids: List[str]) -> PlayResponse:
         user = await self.get_user_from_jwt(app_jwt)
         valid_access_token = await get_valid_access_token(user, self.session)
-        response = play_songs(valid_access_token, tracks_ids)
+        response: PlayResponse = play_songs(valid_access_token, tracks_ids)
         return response
 
     async def handle_callback(self, code: str, frontend_url: str) -> tuple[str, str]:
