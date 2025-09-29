@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { colors } from "~/colors";
 import CustomButton from "~/components/common/CustomButton";
 import TextField from "~/components/common/TextField";
+import { SpotifyLoginButton } from "~/components/utils/SpotifyLoginButton";
 import { homeWelcomeText } from "~/content/texts";
 
 const StyledMainContainer = styled.div`
@@ -92,7 +93,7 @@ export default function Home() {
     <StyledMainContainer>
       <StyledBackgroundContainer>
         <StyledTitle>Music-Books</StyledTitle>
-
+        <SpotifyLoginButton></SpotifyLoginButton>
         <StyledButtonsContainer>
           <CustomButton type={"button"} onClick={() => navigate("/text-matcher")}>Match By Fragment</CustomButton>
           <CustomButton type={"button"} onClick={() => navigate("/book-matcher")}>Match By Books</CustomButton>

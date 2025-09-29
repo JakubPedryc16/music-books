@@ -11,5 +11,21 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ["styled-components"]
-  }
+  },
+  server: {
+    host: '127.0.0.1',
+    port: 5173,
+    proxy: {
+      '/spotify/': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+        '/match/': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  } 
 });

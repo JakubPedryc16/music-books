@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { colors } from "app/colors" 
+import { SpotifyLoginButton } from "./utils/SpotifyLoginButton";
 
 
 const StyledNav = styled.nav`
@@ -99,6 +100,10 @@ const Burger = styled.div`
     }
 `;
 
+const StyledLoginContainer = styled.div`
+    
+`
+
 
 const Navbar = () => {
     const [isMobile, setIsMobile] = useState<boolean>(false)
@@ -119,6 +124,10 @@ const Navbar = () => {
                 <StyledNavLink to="/">Find By Text</StyledNavLink>
                 <StyledNavLink to="/">Find By Book</StyledNavLink>
             </StyledLinksContainer>
+
+            <StyledLoginContainer>
+                <SpotifyLoginButton></SpotifyLoginButton>
+            </StyledLoginContainer>
         </StyledNav>
     );
 };

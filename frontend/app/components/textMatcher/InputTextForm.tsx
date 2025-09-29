@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import CustomButton from "../common/CustomButton";
 import { colors } from "~/colors";
+import api from "~/utils/api";
+import type { MatchTextParams } from "../models/match";
 
 const StyledForm = styled.form`
     display: flex;
@@ -44,10 +46,13 @@ const StyledLimitText = styled.div`
     font-size: 14px;
     line-height: 20px;
 `
+type Props = {
+    onSubmit: (params: MatchTextParams) => void;
+}
 
-const InputTextForm = () => {
+const InputTextForm = ({onSubmit}: Props) => {
 
-    const maxLength = 200;
+    const maxLength = 1000;
     const [text, setText] = useState<string>("");
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -57,8 +62,12 @@ const InputTextForm = () => {
     }
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
+        e.preventDefault()
+        onSubmit({
+            text: text,
+            amount: 5,
+            matcher_type: "hybrid_cascade" 
+        })
     }
     
     return (

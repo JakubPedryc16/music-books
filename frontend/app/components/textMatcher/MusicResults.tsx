@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { colors } from "~/colors";
 import DynamicScrollText from "../utils/DynamicScrollText";
+import type { SongData } from "../models/match";
 
 const StyledMainContainer = styled.div`
     display: flex;
@@ -63,23 +64,32 @@ const ScrollWrapper = styled.div`
   overflow: hidden;   /* 🔑 ukrywa wszystko, co wychodzi poza rodzica */
 `;
 
-const MusicResults = () => {
+type Props = {
+    tracks?: SongData[] | null,
+    loading: boolean,
+    error: string | null
+}
+
+const MusicResults = ({tracks, loading, error} : Props) => {
+    if (loading) return <p>Loading ...</p>
+    if (error) return <p>Error: {error}</p>
+    if (!tracks || tracks.length == 0) return <></>
 
     return(
         <StyledMainContainer>
             <StyledTitle>Results</StyledTitle>
             <StyledTracksContainer>
                 <StyledTrackElement> {/*TODO: create component for element representation*/}
-                    <DynamicScrollText><h3>Title</h3></DynamicScrollText>
-                    <DynamicScrollText><p>Author Author</p></DynamicScrollText>
+                    <DynamicScrollText><h3>{tracks[0].title}</h3></DynamicScrollText>
+                    <DynamicScrollText><p>{tracks[0].author}</p></DynamicScrollText>
                 </StyledTrackElement>
                 <StyledTrackElement> 
-                    <DynamicScrollText><h3>Title</h3></DynamicScrollText>
-                    <DynamicScrollText><p>Some Weird Long Name</p></DynamicScrollText>
+                    <DynamicScrollText><h3>{tracks[1].title}</h3></DynamicScrollText>
+                    <DynamicScrollText><p>{tracks[1].author}</p></DynamicScrollText>
                 </StyledTrackElement>
                 <StyledTrackElement>
-                     <DynamicScrollText><h3>Title</h3></DynamicScrollText>
-                    <DynamicScrollText><p>Some very long name with some additional random thing</p></DynamicScrollText>
+                     <DynamicScrollText><h3>{tracks[2].title}</h3></DynamicScrollText>
+                    <DynamicScrollText><p>{tracks[2].author}</p></DynamicScrollText>
                 </StyledTrackElement>
             </StyledTracksContainer>
             

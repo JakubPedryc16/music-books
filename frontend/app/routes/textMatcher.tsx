@@ -3,6 +3,11 @@ import InputTextForm from "~/components/textMatcher/InputTextForm";
 import TextField from "~/components/common/TextField";
 import { textMatcherText } from "~/content/texts";
 import MusicResults from "~/components/textMatcher/MusicResults";
+import { useEffect, useState } from "react";
+import type { MatchedTracksResponse } from "~/components/models/apiTypes";
+import type { MatchTextParams, SongData } from "~/components/models/match";
+import api from "~/utils/api";
+import { useTextMatcher } from "~/hooks/useTextMatcher";
 
 const StyledMainContainer = styled.div`
     display: flex;
@@ -29,12 +34,17 @@ const StyledSecionsContainer = styled.div`
 
 
 const TextMatcher = () => {
+    const {data, error, loading, execute} = useTextMatcher()
+        
+    const handleSongMatcher = async (params: MatchTextParams) => {
+        execute(params)
+    }
     return (
         <StyledMainContainer>
             <TextField title={"Search By Text"} text={textMatcherText}/>
             <StyledSecionsContainer>
-                <InputTextForm/>
-                <MusicResults/>
+                <InputTextForm onSubmit={handleSongMatcher}/>
+                <MusicResults tracks={data} loading={loading} error={error}/>
             </StyledSecionsContainer>
         </StyledMainContainer>
     );
