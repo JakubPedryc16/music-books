@@ -8,7 +8,7 @@ from app.matchers.matcher_constants import MatcherType
 
 router = APIRouter(prefix="/match")
 
-@router.get("/hybrid-cascade")
+@router.get("/text")
 async def match_hybrid_cascade_api(
     text: str,
     amount: int = 5,

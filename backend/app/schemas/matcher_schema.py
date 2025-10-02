@@ -12,4 +12,4 @@ class MatchedTracksResponse(APIResponse):
     data: Optional[list[SongData]]
 
 class TranslationResponse(APIResponse):
-    data: str
+    data: Optional[str]

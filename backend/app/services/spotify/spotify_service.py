@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta, timezone
 import os
-from typing import List
 from spotipy import Spotify
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 import jwt
-
+from spotipy.exceptions import SpotifyException
+from requests.exceptions import RequestException
+from app.dal.music_dal import DataAccessException
 from app.dal.user_dal import UserDAL
 from app.models.user import User
-from app.schemas.spotify_schema import PlayResponse, PlayResponseData
+from app.schemas.spotify_schema import PlayResponse, SpotifyRequest
 from app.services.spotify.spotify_service_helpers import get_valid_access_token, play_songs, exchange_code_for_token, get_auth_url
 
 JWT_SECRET = os.getenv("JWT_SECRET")
@@ -43,34 +44,67 @@ class SpotifyService:
         spotify_id = payload.get("spotify_id")
         if not spotify_id:
             raise HTTPException(status_code=401, detail="Invalid token payload")
-        user = await self.user_dal.get_by_spotify_id(spotify_id)
+
+        try:
+            user = await self.user_dal.get_by_spotify_id(spotify_id)
+        except DataAccessException:
+            raise HTTPException(status_code=500, detail="Database connection error.")
+        
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        
         return user
 
-    async def play_tracks(self, app_jwt: str, tracks_ids: List[str]) -> PlayResponse:
+    async def play_tracks(self, app_jwt: str, spotify_request: SpotifyRequest) -> PlayResponse:
         user = await self.get_user_from_jwt(app_jwt)
         valid_access_token = await get_valid_access_token(user, self.session)
-        response: PlayResponse = play_songs(valid_access_token, tracks_ids)
-        return response
+
+        try:
+            response = play_songs(valid_access_token, spotify_request.tracks_ids)
+            return response
+        except SpotifyException as e:
+            error_message = str(e).lower()
+            if "no active device" in error_message:
+                raise HTTPException(status_code=409, detail="No active Spotify device found.")
+            if "invalid_token" in error_message:
+                raise HTTPException(status_code=401, detail="Spotify token is invalid or expired.")
+            
+            raise HTTPException(status_code=502, detail=f"Spotify API error: {e}")
+        except RequestException:
+            raise HTTPException(status_code=503, detail="Connection error with Spotify service.")
 
     async def handle_callback(self, code: str, frontend_url: str) -> tuple[str, str]:
-        token_info = exchange_code_for_token(code)
-        access_token = token_info["access_token"]
-        refresh_token = token_info["refresh_token"]
-        expires_in = int(token_info["expires_in"])
+        try:
+            token_info = exchange_code_for_token(code)
+            
+            access_token = token_info["access_token"]
+            refresh_token = token_info["refresh_token"]
+            expires_in = int(token_info["expires_in"])
 
-        sp = Spotify(auth=access_token)
-        me = sp.me()
-
-        user = await self.user_dal.create_or_update(
-            spotify_id=me["id"],
-            display_name=me.get("display_name"),
-            email=me.get("email"),
-            access_token=access_token,
-            refresh_token=refresh_token,
-            expires_in=expires_in
-        )
+            sp = Spotify(auth=access_token)
+            me = sp.me()
+        except (SpotifyException, RequestException):
+            raise HTTPException(
+                status_code=401,
+                detail="Spotify authorization failed. Code is invalid or expired."
+            )
+        except KeyError:
+            raise HTTPException(
+                status_code=500,
+                detail="Spotify response missing essential token information."
+            )
+        
+        try:
+            user = await self.user_dal.create_or_update(
+                spotify_id=me["id"],
+                display_name=me.get("display_name"),
+                email=me.get("email"),
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_in=expires_in
+            )
+        except DataAccessException:
+            raise HTTPException(status_code=500, detail="Database connection error during user creation.")
 
         jwt_token = self.create_app_jwt(user.id, user.spotify_id)
         redirect_url = f"{frontend_url}/spotify-callback"

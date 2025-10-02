@@ -37,10 +37,12 @@ class EmbeddingMatcher(Matcher):
         if not music_embeddings:
             return []
         
-        music_matrix = np.vstack(music_embeddings)
+        try:
+            music_matrix = np.vstack(music_embeddings)
+            sims = cosine_similarity([book_embedding], music_matrix)[0]
+            music_scored = list(zip(music_ids, sims))
+            music_scored.sort(key=lambda x: x[1], reverse=True)
 
-        sims = cosine_similarity([book_embedding], music_matrix)[0]
-        music_scored = list(zip(music_ids, sims))
-        music_scored.sort(key=lambda x: x[1], reverse=True)
-
-        return music_scored[:amount]
+            return music_scored[:amount]
+        except Exception as e:
+            raise RuntimeError(f"Matching failed due to error in numerical calculation: {e}")

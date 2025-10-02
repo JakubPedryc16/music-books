@@ -1,6 +1,5 @@
 import os
 from datetime import datetime, timedelta, timezone
-from typing import List
 import requests
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
@@ -9,6 +8,7 @@ from app.db.db_async import AsyncSession
 from app.models.user import User
 from app.schemas.spotify_schema import PlayResponse, PlayResponseData
 from app.utils.logger import logger
+
 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
@@ -22,43 +22,38 @@ sp_oauth = SpotifyOAuth(
     scope=SCOPE
 )
 
+
 def get_auth_url() -> str:
     return sp_oauth.get_authorize_url()
 
 def exchange_code_for_token(code: str) -> dict:
     return sp_oauth.get_access_token(code, as_dict=True)
 
-def play_songs(access_token: str, song_uris: List[str]) -> PlayResponse:
+
+def play_songs(access_token: str, song_uris: list[str]) -> PlayResponse:
     sp = Spotify(auth=access_token)
-    try:
-        devices = sp.devices().get("devices", [])
-        if not devices:
-            return PlayResponse(
-                success=False,
-                error="no_active_device"
-            )
-        device_id = devices[0]["id"]
-        sp.start_playback(device_id=device_id, uris=song_uris)
-    except SpotifyException as e:
-        logger.exception(f"Spotify API error: {e}")
-        return PlayResponse(
-            success=False,
-            error=str(e)
-        )
-    except Exception as e:
-        logger.exception(f"Unexpected error while playing songs: {e}")
-        return PlayResponse(
-            success=False,
-            error=str(e)
-        )
+    
+    devices = sp.devices().get("devices", [])
+    if not devices:
+        raise SpotifyException(409, -1, "No active device", headers={})
+
+    device_id = devices[0]["id"]
+
+    formatted_uris = [
+        uri if uri.startswith("spotify:track:") else f"spotify:track:{uri}"
+        for uri in song_uris
+    ]
+
+    sp.start_playback(device_id=device_id, uris=formatted_uris)
 
     return PlayResponse(
         success=True,
         data=PlayResponseData(
-            tracks_count=len(song_uris),
-            played_tracks=song_uris
+            tracks_count=len(formatted_uris),
+            played_tracks=formatted_uris
         )
     )
+
 
 def refresh_spotify_token(refresh_token: str) -> dict:
     url = "https://accounts.spotify.com/api/token"
@@ -71,6 +66,7 @@ def refresh_spotify_token(refresh_token: str) -> dict:
     response = requests.post(url, data=data)
     response.raise_for_status()
     return response.json()
+
 
 async def get_valid_access_token(user: User, session: AsyncSession) -> str:
     now = datetime.now(timezone.utc)

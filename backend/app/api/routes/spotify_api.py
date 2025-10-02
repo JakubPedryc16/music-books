@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Cookie, Depends, HTTPException
+from fastapi import APIRouter, Body, Cookie, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.db_async import get_async_session
-from app.schemas.spotify_schema import PlayResponse
+from app.schemas.spotify_schema import PlayResponse, SpotifyRequest
 from app.services.spotify.spotify_service_helpers import get_auth_url
 from app.services.spotify.spotify_service import SpotifyService
 import os
@@ -35,7 +35,7 @@ async def callback(code: str, session: AsyncSession = Depends(get_async_session)
 
 @router.post("/play", response_model=PlayResponse)
 async def play_endpoint(
-    tracks_ids: list[str],
+    tracks_ids: SpotifyRequest = Body(...),
     app_jwt: str = Cookie(None),
     session: AsyncSession = Depends(get_async_session)
 ):

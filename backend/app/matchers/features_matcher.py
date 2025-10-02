@@ -32,12 +32,18 @@ class FeaturesMatcher(Matcher):
         music_list_included:list[Music] = None
     ) -> list[tuple[int, float]]:
         
-        weights = np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32)
+        try:
+            weights = np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32)
 
-        sentiment_score = await self.embeddingService.predict_sentiment(text)
-        emotion_map = await self.embeddingService.predict_emotions(text)
+            sentiment_score = await self.embeddingService.predict_sentiment(text)
+            emotion_map = await self.embeddingService.predict_emotions(text)
 
-        feature_vector = self._compute_feature_vector(text, sentiment_score, emotion_map)
+            feature_vector = self._compute_feature_vector(text, sentiment_score, emotion_map)
+        except Exception as e:
+            if isinstance(e, RuntimeError):
+                raise e
+            raise RuntimeError(f"Feature calculation or ML service call failed: {e}")
+        
         music_list = []
         
         if music_list_included is None:
@@ -60,20 +66,23 @@ class FeaturesMatcher(Matcher):
         if not music_features:
             return []
         
-        music_matrix = np.vstack(music_features)
+        try:
+            music_matrix = np.vstack(music_features)
 
-        scaler = StandardScaler()
-        music_matrix_std = scaler.fit_transform(music_matrix)
-        feature_vector_std = scaler.transform(feature_vector.reshape(1, -1))
+            scaler = StandardScaler()
+            music_matrix_std = scaler.fit_transform(music_matrix)
+            feature_vector_std = scaler.transform(feature_vector.reshape(1, -1))
 
-        weighted_diff = weights * (music_matrix_std - feature_vector_std)
-        distances = np.linalg.norm(weighted_diff, axis=1)
-        scores = 1 / (1 + distances) 
+            weighted_diff = weights * (music_matrix_std - feature_vector_std)
+            distances = np.linalg.norm(weighted_diff, axis=1)
+            scores = 1 / (1 + distances) 
 
-        music_scored = list(zip(music_ids, scores))
-        music_scored.sort(key=lambda x: x[1], reverse=True)
+            music_scored = list(zip(music_ids, scores))
+            music_scored.sort(key=lambda x: x[1], reverse=True)
 
-        return music_scored[:amount]
+            return music_scored[:amount]
+        except Exception as e:
+            raise RuntimeError(f"Matching failed due to error in numerical calculation: {e}")
 
 
     def _compute_feature_vector(self, text: str, sentiment_score: float, emotion_map: dict) -> np.ndarray:
