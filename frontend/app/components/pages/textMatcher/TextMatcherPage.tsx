@@ -1,13 +1,15 @@
 import styled from "styled-components";
-import InputTextForm from "~/components/textMatcher/InputTextForm";
+import InputTextForm from "~/components/pages/textMatcher/components/InputTextForm";
 import TextField from "~/components/common/TextField";
 import { textMatcherText } from "~/content/texts";
-import MusicResults from "~/components/textMatcher/MusicResults";
+import MusicResults from "~/components/pages/textMatcher/components/MusicResults";
 import { useEffect, useState } from "react";
 import type { MatchedTracksResponse } from "~/components/models/apiTypes";
 import type { MatchTextParams, SongData } from "~/components/models/match";
 import api from "~/utils/api";
 import { useTextMatcher } from "~/hooks/useTextMatcher";
+import { usePlaySpotify } from "~/hooks/usePlaySpotify";
+import type { PlayRequestData } from "~/components/models/spotify";
 
 const StyledMainContainer = styled.div`
     display: flex;
@@ -33,21 +35,33 @@ const StyledSecionsContainer = styled.div`
 `
 
 
-const TextMatcher = () => {
-    const {data, error, loading, execute} = useTextMatcher()
-        
+const TextMatcherPage = () => {
+    const textMatcher = useTextMatcher()
+    const spotifyPlayer = usePlaySpotify()
+
     const handleSongMatcher = async (params: MatchTextParams) => {
-        execute(params)
+        textMatcher.execute(params)
     }
+
+    const handlePlaySpotify = async (data: SongData[]) => {
+        const ids: PlayRequestData = { tracks_ids: data.map((elem) => elem.spotify_id)}
+        spotifyPlayer.execute(ids)
+    }
+
     return (
         <StyledMainContainer>
             <TextField title={"Search By Text"} text={textMatcherText}/>
             <StyledSecionsContainer>
                 <InputTextForm onSubmit={handleSongMatcher}/>
-                <MusicResults tracks={data} loading={loading} error={error}/>
+                <MusicResults 
+                    tracks={textMatcher.data}
+                    loading={textMatcher.loading} 
+                    error={textMatcher.error} 
+                    onClick={handlePlaySpotify}
+                />
             </StyledSecionsContainer>
         </StyledMainContainer>
     );
 }
 
-export default TextMatcher;
+export default TextMatcherPage;

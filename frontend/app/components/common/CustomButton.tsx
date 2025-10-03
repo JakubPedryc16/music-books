@@ -15,8 +15,8 @@ const StyledButton = styled.button<{$variant?: "primary" | "secondary"}>`
     line-height: 32px;
     font-size: 20px;
     font-weight: 700;
-    background-color: ${colors.darkgrey};
-    border: ${ ({$variant }) => $variant == "primary" ? "2px solid white" : "none"} ;
+    background-color: ${colors.darkGrey};
+    border: ${ ({$variant }) => $variant == "primary" ? `2px solid ${colors.light}` : "none"} ;
     justify-content: center;
 
     border-radius: 10px;
@@ -29,7 +29,7 @@ const StyledButton = styled.button<{$variant?: "primary" | "secondary"}>`
     }
     
     &:active {
-        background-color: ${colors.lightgrey};
+        background-color: ${colors.lightGrey};
     }
     
     &:focus-visible {

@@ -10,7 +10,7 @@ const StyledNav = styled.nav`
     flex-direction: row;
     align-items: center;
 
-    background-color: ${colors.darkgrey};
+    background-color: ${colors.darkGrey};
     padding: 0.75rem 10vw 0.5rem 10vw;
 
     @media (max-width: 768px) {
@@ -32,7 +32,7 @@ const StyledLinksContainer = styled.div<LinksContainerProps>`
         flex-direction: column;
         align-items: center;
 
-        background-color: ${colors.darkgrey};
+        background-color: ${colors.darkGrey};
         display: ${props => (props.$isVisible ? "flex" : "none")};
 
         width: 100%;
