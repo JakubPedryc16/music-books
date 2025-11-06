@@ -12,3 +12,7 @@ export type TranslationResponse = APIResponse<string>;
 export type PlayResponse = APIResponse<PlayResponseData>
 
 export type MatchedTracksResponse = APIResponse<SongData[]>
+
+export type BookPageResponse = APIResponse<string>
+
+export type UploadBookResponse = APIResponse<number>

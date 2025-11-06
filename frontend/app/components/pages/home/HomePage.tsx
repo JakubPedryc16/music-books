@@ -93,10 +93,9 @@ export default function HomePage() {
     <StyledMainContainer>
       <StyledBackgroundContainer>
         <StyledTitle>Music-Books</StyledTitle>
-        <SpotifyLoginButton></SpotifyLoginButton>
         <StyledButtonsContainer>
           <CustomButton type={"button"} onClick={() => navigate("/text-matcher")}>Match By Fragment</CustomButton>
-          <CustomButton type={"button"} onClick={() => navigate("/book-matcher")}>Match By Books</CustomButton>
+          {/* <CustomButton type={"button"} onClick={() => navigate("/book-matcher")}>Match By Books</CustomButton> */}
         </StyledButtonsContainer>
       </StyledBackgroundContainer>
 

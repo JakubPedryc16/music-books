@@ -62,13 +62,14 @@ const StyledNavLink = styled(NavLink)`
 `
 
 const StyledIconsContainer = styled.div`
-    width: 128px;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
 
     @media (max-width: 768px) {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
         width: 100%;
     }
 `
@@ -112,22 +113,20 @@ const Navbar = () => {
         <StyledNav>
             <StyledIconsContainer>
                 <StyledImage src="logo.webp"></StyledImage>
+                <SpotifyLoginButton $variant="secondary" $size="small">Login Spotify</SpotifyLoginButton>
                 <Burger onClick={() => setIsMobile(!isMobile)}>
                     <span></span>
                     <span></span>
                     <span></span>
                 </Burger>
             </StyledIconsContainer>
-
+           
             <StyledLinksContainer $isVisible={isMobile}>
                 <StyledNavLink to="/">Home</StyledNavLink>
-                <StyledNavLink to="/">Find By Text</StyledNavLink>
-                <StyledNavLink to="/">Find By Book</StyledNavLink>
+                <StyledNavLink to="/text-matcher">Find By Text</StyledNavLink>
+                {/* <StyledNavLink to="/">Find By Book</StyledNavLink> */}
             </StyledLinksContainer>
 
-            <StyledLoginContainer>
-                <SpotifyLoginButton></SpotifyLoginButton>
-            </StyledLoginContainer>
         </StyledNav>
     );
 };

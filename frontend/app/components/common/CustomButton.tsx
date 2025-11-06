@@ -1,19 +1,34 @@
 import type { ReactNode } from "react";
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import { colors } from "~/colors";
 
-
-interface ButtonProps {
-    children: ReactNode;
-    type: "button" | "submit";
-    onClick?: () => void;
-    $variant?: "primary" | "secondary";
+type StyledButtonProps = {
+    $variant: "primary" | "secondary";
+    $size: "small" | "normal" | "big"
 }
 
-const StyledButton = styled.button<{$variant?: "primary" | "secondary"}>`
+const sizeStyles = {
+    small: css`
+        line-height: 24px;
+        font-size: 16px;
+        font-weight: 500;
+        min-width: 128px;
+    `,
+    
+    normal: css`
+        line-height: 32px;
+        font-size: 20px;
+
+    `,
+
+    big: css`
+        line-height: 40px;
+        font-size: 24px;
+    `
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
     padding: 16px 32px;
-    line-height: 32px;
-    font-size: 20px;
     font-weight: 700;
     background-color: ${colors.darkGrey};
     border: ${ ({$variant }) => $variant == "primary" ? `2px solid ${colors.light}` : "none"} ;
@@ -23,6 +38,8 @@ const StyledButton = styled.button<{$variant?: "primary" | "secondary"}>`
     display: inline-flex;
     min-width: 256px;
     height: fit-content;
+
+    ${(props) => sizeStyles[props.$size]}
 
     &:hover {
         background-color: ${colors.grey};
@@ -44,10 +61,17 @@ const StyledButton = styled.button<{$variant?: "primary" | "secondary"}>`
     }
 
 `
+type ButtonProps = {
+    children: ReactNode;
+    type: "button" | "submit";
+    onClick?: () => void;
+    $variant?: "primary" | "secondary";
+    $size?: "small" | "normal" | "big"
+}
 
-const CustomButton = ({children, type, onClick, $variant = "primary"} : ButtonProps) => {
+const CustomButton = ({children, type, onClick, $variant = "primary", $size = "normal"} : ButtonProps) => {
     return (
-        <StyledButton type={type} onClick={onClick} $variant={$variant}>{children} </StyledButton>
+        <StyledButton type={type} onClick={onClick} $variant={$variant} $size={$size}> {children} </StyledButton>
     );
 };
 

@@ -2,3 +2,7 @@ export const homeWelcomeText = `Music-Books to aplikacja stworzona z myślą o d
 Aplikacja sprawdzi się także w bardziej osobistych sytuacjach - na przykład przy wyborze muzyki do ulubionego fragmentu filmu rodzinnego sprzed kilku lat, który chcemy zaprezentować bliskim w nowej odsłonie. Music-Books otwiera przed użytkownikiem przestrzeń do tworzenia unikalnych połączeń między tekstem a muzyką.`
 
 export const textMatcherText = `Wyszukiwarka umożliwia odnalezienie utworów muzycznych pasujących do podanego fragmentu tekstu. Obsługa jest bardzo prosta - wystarczy wpisać interesujący Cię tekst i kliknąć przycisk „Search For Music”. Następnie należy chwilę poczekać, ponieważ proces wyszukiwania może potrwać kilka minut. Po jego zakończeniu po prawej stronie pojawią się najbardziej dopasowane propozycje muzyczne. Klikając przycisk „Open in Spotify”, otrzymasz gotową playlistę z utworami o najwyższym stopniu dopasowania, która zostanie odtworzona bezpośrednio w Spotify.`
+
+export const bookMatcherText = `Wyszukiwarka umożliwia odnalezienie utworów muzycznych pasujących do podanego fragmentu książki. Wraz z kolejnymi stronami aplikacja automatycznie będzie dopasowywała nowe utwory, pierwsze dopasowanie może chwilę potrwać.`;
+
+export const bookFinderText = `Skorzystaj z kolekcji dostępnych książek lub dodaj swoją własną, aby następnie móc skorzystać z dopasowania piosenki.`

@@ -132,16 +132,16 @@ const InputTextForm = ({onSubmit}: Props) => {
         }
     }
 
-const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value: number = Number(e.target.value)
-    setError("")
-    if (Number.isInteger(value) && value > 0 && value <= maxAmount) {
-        setAmount(e.target.value);
-    } else {
-        setError(`Amount must be a number from 1 and ${maxAmount}`);
-        setAmount("");
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value: number = Number(e.target.value)
+        setError("")
+        if (Number.isInteger(value) && value > 0 && value <= maxAmount) {
+            setAmount(e.target.value);
+        } else {
+            setError(`Amount must be a number from 1 and ${maxAmount}`);
+            setAmount("");
+        }
     }
-}
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()

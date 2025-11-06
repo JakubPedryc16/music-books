@@ -3,8 +3,6 @@ import InputTextForm from "~/components/pages/textMatcher/components/InputTextFo
 import TextField from "~/components/common/TextField";
 import { textMatcherText } from "~/content/texts";
 import MusicResults from "~/components/pages/textMatcher/components/MusicResults";
-import { useEffect, useState } from "react";
-import type { MatchedTracksResponse } from "~/components/models/apiTypes";
 import type { MatchTextParams, SongData } from "~/components/models/match";
 import api from "~/utils/api";
 import { useTextMatcher } from "~/hooks/useTextMatcher";
