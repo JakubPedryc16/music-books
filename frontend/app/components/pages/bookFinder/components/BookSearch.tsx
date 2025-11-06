@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { colors } from "~/colors";
 import BookComponent from "~/components/common/BookComponent";
+import type { BookData } from "~/components/models/book";
 import { useBooks } from "~/hooks/useBooks";
 
 const MainComponent = styled.div`
@@ -53,26 +54,45 @@ const StyledBooksContainer = styled.ul<{$isLong: boolean}>`
 const BookSearch = () => {
 
     const bookHook = useBooks()
+    const [query, setQuery] = useState<string>("");
 
-    useEffect (() => {
+    useEffect(() => {
         bookHook.execute();
-    }, [])
+    }, [bookHook.execute]);
 
 
+    const filteredBooks = useMemo(() => {
+        if (!bookHook.data) return [];
+        return bookHook.data.filter(book =>
+            book.title.toLowerCase().includes(query.toLowerCase())
+        );
+    }, [bookHook.data, query]);
 
+    
     return (
  
         <MainComponent>
             <StyledLabel htmlFor="searchBar">Search Book From Available Ones</StyledLabel>
-            <StyledInput placeholder="input book name ..."/>
+            <StyledInput
+                id="searchBar"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="input book name ..."
+            />
             {bookHook.loading && <div>Loading ...</div>}
             {bookHook.error && <div>{bookHook.error}</div>}
-            
-            //TODO : Seperate component for books and maybe generics with MusicResults
-            
-            <StyledBooksContainer $isLong = {bookHook.data && bookHook.data.length > 0 ? true : false}>
-                {(bookHook.data && bookHook.data.length) && bookHook.data.map(book => <BookComponent book={book}/>)}
+                        
+            {/* TODO: Separate component for books and maybe generics with MusicResults */}
+
+
+            <StyledBooksContainer $isLong={filteredBooks.length > 0}>
+            {filteredBooks.length > 0 ? (
+                filteredBooks.map(book => <BookComponent key={book.id} book={book} />)
+            ) : (
+                !bookHook.loading && <div>No books found</div>
+            )}
             </StyledBooksContainer>
+
             
         </MainComponent>
     );

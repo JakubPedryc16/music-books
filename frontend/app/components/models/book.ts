@@ -8,6 +8,7 @@ export type UploadBookRequest = {
 }
 
 export type BookData = {
+    id: number;
     title: string;
     author: string;
 }
