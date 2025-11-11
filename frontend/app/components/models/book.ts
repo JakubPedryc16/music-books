@@ -1,6 +1,6 @@
 export type PageRequest = {
-    bookId: number;
-    pageIndex: number;
+    book_id: number;
+    page: number;
 }
 
 export type UploadBookRequest = {
@@ -11,4 +11,10 @@ export type BookData = {
     id: number;
     title: string;
     author: string;
+}
+
+export type BookPageData = {
+    id: number;
+    page: number;
+    text: string;
 }

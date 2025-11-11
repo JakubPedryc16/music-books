@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { colors } from "~/colors";
 import CustomButton from "~/components/common/CustomButton";
-import type { UploadBookRequest } from "~/components/models/book";
+import type { BookData, BookPageData, UploadBookRequest } from "~/components/models/book";
 import { useUploadBook } from "~/hooks/useUploadBook";
 
 const StyledForm = styled.form`
@@ -49,7 +49,9 @@ const StyledInputContainer = styled.div`
 
 const UploadBookForm = () => {
 
-    const [file, setFile] = useState<File | null> (null);
+    const [file, setFile] = useState<File | null>(null);
+    const [title, setTitle] = useState("");
+    const [author, setAuthor] = useState("");
     const {data, loading, error, execute} = useUploadBook();
     const navigate = useNavigate();
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,28 +62,48 @@ const UploadBookForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) return;
+        if (!file || !title || !author) return;
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("book", file);
+        formData.append("title", title);
+        formData.append("author", author);
 
-        const uploadBookRequest: UploadBookRequest = {
-            book: formData
-        }
-        const bookId = await execute(uploadBookRequest);
+        const bookId: number | null = await execute(formData);
 
-        if(!error && bookId) {
-            navigate(`book-matcher/${bookId}`)
+        if (!error && bookId) {
+            navigate(`/book-matcher/${bookId}`);
         }
     }
 
     return (
        <StyledForm onSubmit={handleSubmit}>
         <StyledInputContainer>
+            <StyledInputContainer>
+                <StyledLabel htmlFor="titleInput">Book Title</StyledLabel>
+                <StyledInput
+                    type="text"
+                    id="titleInput"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    required
+                />
+            </StyledInputContainer>
+
+            <StyledInputContainer>
+                <StyledLabel htmlFor="authorInput">Author</StyledLabel>
+                <StyledInput
+                    type="text"
+                    id="authorInput"
+                    value={author}
+                    onChange={e => setAuthor(e.target.value)}
+                    required
+                />
+            </StyledInputContainer>
             <StyledLabel htmlFor="fileInput">Upload The Pdf Book File</StyledLabel>
             <StyledInput
                 type="file"
-                accept="appliaction/pdf"
+                accept="application/pdf"
                 id="fileInput"
                 onChange={handleFileChange}
             />

@@ -1,4 +1,4 @@
-import type { BookData } from "./book";
+import type { BookData, BookPageData } from "./book";
 import type { SongData } from "./match";
 import type { PlayResponseData } from "./spotify";
 
@@ -16,6 +16,6 @@ export type MatchedTracksResponse = APIResponse<SongData[]>
 
 export type MatchedBooksResponse = APIResponse<BookData[]>
 
-export type BookPageResponse = APIResponse<string>
+export type BookPageResponse = APIResponse<BookPageData>
 
 export type UploadBookResponse = APIResponse<number>

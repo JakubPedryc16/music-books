@@ -3,6 +3,7 @@ import { colors } from "~/colors"
 import TextField from "~/components/common/TextField"
 import { bookFinderText, bookMatcherText, textMatcherText } from "~/content/texts"
 import UploadBookForm from "./components/UploadBookForm"
+import BookSearch from "./components/BookSearch"
 
 const StyledMainContainer = styled.div`
     display: flex;
@@ -40,6 +41,7 @@ export default function BookFinderPage() {
         <StyledMainContainer>
             <TextField title={"Search available books or upload your own"} text={bookFinderText}/>
             <UploadBookForm/>
+            <BookSearch/>
         </StyledMainContainer>
     )
 }

@@ -124,7 +124,7 @@ const Navbar = () => {
             <StyledLinksContainer $isVisible={isMobile}>
                 <StyledNavLink to="/">Home</StyledNavLink>
                 <StyledNavLink to="/text-matcher">Find By Text</StyledNavLink>
-                {/* <StyledNavLink to="/">Find By Book</StyledNavLink> */}
+                <StyledNavLink to="/book-finder">Find By Book</StyledNavLink>
             </StyledLinksContainer>
 
         </StyledNav>

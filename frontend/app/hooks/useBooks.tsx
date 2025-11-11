@@ -4,5 +4,5 @@ import type { MatchedBooksResponse } from "~/components/models/apiTypes"
 import type { BookData } from "~/components/models/book"
 
 export const useBooks = () => {
-    return useApi<BookData[], void> (() => api.get<MatchedBooksResponse>("/books"))
+    return useApi<BookData[], void> (() => api.get<MatchedBooksResponse>("/books/all"))
 }

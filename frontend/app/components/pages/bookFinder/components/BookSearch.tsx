@@ -58,7 +58,7 @@ const BookSearch = () => {
 
     useEffect(() => {
         bookHook.execute();
-    }, [bookHook.execute]);
+    }, []);
 
 
     const filteredBooks = useMemo(() => {
