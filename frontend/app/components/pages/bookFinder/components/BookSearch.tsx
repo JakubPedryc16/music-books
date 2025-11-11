@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { colors } from "~/colors";
 import BookComponent from "~/components/common/BookComponent";
@@ -9,7 +10,8 @@ const MainComponent = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4rem;
+    gap: 2rem;
+
 `
 
 const StyledLabel = styled.label`
@@ -27,7 +29,7 @@ const StyledInput = styled.input`
     border: 2px solid ${colors.lightGrey};
     box-sizing: border-box; 
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.04);
-
+    min-width: 16rem;
     &:focus {
         outline: none;
         border-color: ${colors.light};
@@ -50,9 +52,14 @@ const StyledBooksContainer = styled.ul<{$isLong: boolean}>`
     }
 `
 
+const StyledInputContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`
 
 const BookSearch = () => {
-
+    const navigate = useNavigate()
     const bookHook = useBooks()
     const [query, setQuery] = useState<string>("");
 
@@ -68,26 +75,27 @@ const BookSearch = () => {
         );
     }, [bookHook.data, query]);
 
+    function findBook(bookId: number) {
+        navigate(`/book-matcher/${bookId}`)
+    }
     
     return (
  
         <MainComponent>
-            <StyledLabel htmlFor="searchBar">Search Book From Available Ones</StyledLabel>
-            <StyledInput
-                id="searchBar"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="input book name ..."
-            />
-            {bookHook.loading && <div>Loading ...</div>}
-            {bookHook.error && <div>{bookHook.error}</div>}
-                        
-            {/* TODO: Separate component for books and maybe generics with MusicResults */}
-
-
+            <StyledInputContainer>
+                <StyledLabel htmlFor="searchBar">Search Book From Available Ones</StyledLabel>
+                <StyledInput
+                    id="searchBar"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="input book name ..."
+                />
+                {bookHook.loading && <div>Loading ...</div>}
+                {bookHook.error && <div>{bookHook.error}</div>} 
+            </StyledInputContainer>
             <StyledBooksContainer $isLong={filteredBooks.length > 0}>
             {filteredBooks.length > 0 ? (
-                filteredBooks.map(book => <BookComponent key={book.id} book={book} />)
+                filteredBooks.map(book => <BookComponent key={book.id} book={book} onClick={findBook}/>)
             ) : (
                 !bookHook.loading && <div>No books found</div>
             )}

@@ -11,7 +11,7 @@ const StyledForm = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4rem;
+    gap: 3rem;
 
     background-color: ${colors.darkGrey};
     padding-bottom: 4rem;
@@ -19,7 +19,13 @@ const StyledForm = styled.form`
     align-self: center;
     width: 100vw;
 `
+const StyledRowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 
+
+`
 const StyledInput = styled.input`
     padding: 8px;
 
@@ -78,7 +84,8 @@ const UploadBookForm = () => {
 
     return (
        <StyledForm onSubmit={handleSubmit}>
-        <StyledInputContainer>
+
+        <StyledRowContainer>
             <StyledInputContainer>
                 <StyledLabel htmlFor="titleInput">Book Title</StyledLabel>
                 <StyledInput
@@ -100,6 +107,8 @@ const UploadBookForm = () => {
                     required
                 />
             </StyledInputContainer>
+        </StyledRowContainer>
+        <StyledInputContainer>
             <StyledLabel htmlFor="fileInput">Upload The Pdf Book File</StyledLabel>
             <StyledInput
                 type="file"
@@ -108,6 +117,7 @@ const UploadBookForm = () => {
                 onChange={handleFileChange}
             />
         </StyledInputContainer>
+
         {error}
         <CustomButton type="submit">Upload Your Book</CustomButton>
        </StyledForm> 

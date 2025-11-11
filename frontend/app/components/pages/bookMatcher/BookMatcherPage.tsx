@@ -74,6 +74,11 @@ export default function BookMatcherPage({ bookId }: Props) {
         <StyledMainContainer>
             <TextField title={"Search By Text"} text={bookMatcherText}/>
             <StyledBookContainer>
+                <ButtonsController
+                    onNext={goNext}
+                    onPrevious={goPrev}
+                    onSpotify={handleSpotify}
+                />
                 <BookArea text={loading ? "Loading..." : text} />
                 <ButtonsController
                     onNext={goNext}
