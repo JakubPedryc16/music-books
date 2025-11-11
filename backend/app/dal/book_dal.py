@@ -9,12 +9,14 @@ from PyPDF2 import PdfReader
 import shutil
 from pathlib import Path
 import uuid
+import pdfplumber
 
 BOOK_STORAGE_PATH = Path("data/books/pdf/")
 
 class BookDAL:
     def __init__(self):
         pass
+
 
     async def get_all(self, session: AsyncSession) -> list[Book]:
         try:
@@ -25,6 +27,7 @@ class BookDAL:
             logger.error(f"Database error in get_all: {e}")
             raise DataAccessException("Failed to fetch all books")
 
+
     async def get_book_by_id(self, book_id: int, session: AsyncSession) -> Book | None:
         try:
             query = select(Book).where(Book.id == book_id)
@@ -33,6 +36,7 @@ class BookDAL:
         except SQLAlchemyError as e:
             logger.error(f"Database error in get_book_by_id: {e}")
             raise DataAccessException(f"Failed to fetch book {book_id}")
+
 
     async def add_book(self, pdf_file: UploadFile, title: str, author: str, session: AsyncSession) -> Book:
         try:
@@ -53,6 +57,8 @@ class BookDAL:
             logger.error(f"Error adding book: {e}")
             raise DataAccessException("Failed to add book")
 
+
+
     async def get_pages(self, book_id: int, pages: list[int], session: AsyncSession) -> dict[int, str]:
         try:
             if len(pages) == 1 and isinstance(pages[0], list):
@@ -69,15 +75,15 @@ class BookDAL:
             if not pdf_path.exists():
                 raise DataAccessException(f"PDF file for book {book_id} not found")
 
-            reader = PdfReader(str(pdf_path))
             result = {}
-            for page_num in pages:
-                if 1 <= page_num <= len(reader.pages):
-                    text = reader.pages[page_num - 1].extract_text() or ""
-                    if text.strip():
-                        result[page_num] = text.strip()
-                else:
-                    result[page_num] = "[Page out of range]"
+            with pdfplumber.open(str(pdf_path)) as pdf:
+                for page_num in pages:
+                    if 1 <= page_num <= len(pdf.pages):
+                        page = pdf.pages[page_num - 1]
+                        lines = page.extract_text().split("\n")
+                        result[page_num] = "\n".join(lines)
+                    else:
+                        result[page_num] = "[Page out of range]"
             return result
 
         except Exception as e:
