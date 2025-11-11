@@ -6,7 +6,7 @@ from app.models.book import Book
 
 API_LIST_URL = "https://gutendex.com/books/?limit=100"
 
-MAX_BOOKS = 100
+MAX_BOOKS = 10
 
 def get_text_plain_link(formats: dict) -> str | None:
     for mime_type, url in formats.items():
@@ -48,7 +48,6 @@ async def load_books_metadata():
                     downloads=book_data["download_count"],
                     link=txt_link,
                     file_name=None,
-                    embedding=None
                 )
                 valid_books.append(book)
                 existing_titles.add(title) 

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from app.dal.music_dal import DataAccessException, MusicDAL
 from app.matchers.matcher import Matcher
-from app.schemas.matcher_schema import SongData
+from app.schemas.matcher_schema import MatchedTracksResponse, SongData
 from app.matchers.matcher_constants import MatcherType
 from app.services.translation_service import detect_and_translate
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,7 @@ async def get_matched_tracks(
     amount: int,
     matcher_type: MatcherType,
     session: AsyncSession
-) -> List[SongData]:
+) -> MatchedTracksResponse:
 
     try:
         text_translated: str = await detect_and_translate(text)
@@ -28,7 +28,7 @@ async def get_matched_tracks(
             detail="Failed to communicate with translation service."
         )
 
-    matcher_class: Matcher = get_matcher(matcher_type)
+    matcher_class: Matcher = await get_matcher(matcher_type)
     
     try:
         matches: list[tuple[int, float]] = await matcher_class.match(
@@ -48,14 +48,18 @@ async def get_matched_tracks(
         music_dal = MusicDAL(session)
         music_list = await music_dal.get_all_by_ids(music_ids)
 
-        tracks = [
-            SongData(
-                title=m.title,
-                author=m.author,
-                spotify_id=m.spotify_id
-            )
-            for m in music_list
-        ]
+        tracks = MatchedTracksResponse(
+            success=True,
+            data = [
+                SongData(
+                    title=m.title,
+                    author=m.author,
+                    spotify_id=m.spotify_id
+                )
+                for m in music_list 
+            ],
+            error=None
+        )
 
     except DataAccessException as e:
         logger.error(f"Database error during track retrieval: {e}")

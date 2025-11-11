@@ -1,6 +1,6 @@
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
 
 from app.schemas.api_response import APIResponse
 from app.utils.logger import logger
@@ -13,6 +13,17 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             error=str(exc)
         ).model_dump()
     )
+
+async def response_validation_exception_handler(request: Request, exc: ResponseValidationError):
+    return JSONResponse(
+        status_code=500,
+        content=APIResponse(
+            success=False,
+            error=f"An error occurred while serializing the response: {exc}",
+            error_code="RESPONSE_VALIDATION_ERROR"
+        ).model_dump()
+    )
+
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     if isinstance(exc.detail, dict) and "message" in exc.detail:
@@ -30,6 +41,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             error_code=error_code
         ).model_dump()
     )
+
 
 async def unhandled_exception_handler(request: Request, exc: Exception):
     error_detail = f"An unexpected server error occurred: {str(exc)}"

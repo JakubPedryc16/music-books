@@ -1,51 +1,86 @@
 import asyncio
 import os
 import aiofiles
-import httpx
-from sqlalchemy import update
-from sqlalchemy.future import select
+from fpdf import FPDF
+from sqlalchemy import update, select
+from sqlalchemy.exc import SQLAlchemyError
 from app.db.db_async import AsyncSessionLocal
 from app.models.book import Book
 from app.utils.logger import logger
 
-TEXT_DIR = "data/books/files/"
+TXT_DIR = "data/books/txt/"
+PDF_DIR = "data/books/pdf/"
+FONT_PATH = "data/books/DejaVuSans.ttf"
 
-async def load_book_test():
-    os.makedirs(TEXT_DIR, exist_ok=True)    
+def txt_to_pdf(txt_path: str, pdf_path: str):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    
+    pdf.add_font("DejaVu", "", FONT_PATH, uni=True)
+    pdf.set_font("DejaVu", size=12)
+
+    with open(txt_path, "r", encoding="utf-8-sig") as f: 
+        for line in f:
+            line = line.strip()
+            if line:
+                pdf.multi_cell(0, 5, line)
+
+    pdf.output(pdf_path)
+
+async def load_books_txt_pdf():
+    os.makedirs(TXT_DIR, exist_ok=True)
+    os.makedirs(PDF_DIR, exist_ok=True)
 
     async with AsyncSessionLocal() as session:
-        result = await session.execute(
-            select(Book).where((Book.file_name == None) | (Book.file_name == ""))
-        )
-        books = result.scalars().all()
+        try:
+            result = await session.execute(
+                select(Book).where((Book.file_name == None) | (Book.file_name == ""))
+            )
+            books = result.scalars().all()
+        except SQLAlchemyError as e:
+            logger.error(f"Database error while fetching books: {e}")
+            return
 
-    async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
+    import httpx
+    async with httpx.AsyncClient(timeout=120, follow_redirects=True) as client:
         for book in books:
-            file_url = book.link
+            if not book.link.lower().startswith("http"):
+                logger.warning(f"Invalid link, skipping: {book.link}")
+                continue
+
+            txt_filename = f"{book.id}.txt"
+            txt_path = os.path.join(TXT_DIR, txt_filename)
+
             try:
-                file_data = await client.get(file_url)
-                file_data.raise_for_status()
-            except Exception as exception:
-                logger.error(f"Exception while downloading book txt file: TITLE={book.title} ID={book.id} EXCEPTION={exception}")
-                continue  
+                response = await client.get(book.link)
+                response.raise_for_status()
+                async with aiofiles.open(txt_path, "wb") as f:
+                    await f.write(response.content)
+            except Exception as e:
+                logger.error(f"Failed to download TXT: {book.title} ({book.link}) EXCEPTION={e}")
+                continue
 
-            filename = f"{book.id}.txt"
-            file_path = os.path.join(TEXT_DIR, filename)
-            try: 
-                async with aiofiles.open(file_path, "wb") as file:
-                    await file.write(file_data.content) 
-            except Exception as exception:
-                logger.error(f"Exception while saving the downloaded book txt file: PATH={file_path} TITLE={book.title} ID={book.id} EXCEPTION={exception}")
-                continue  
+            pdf_filename = f"{book.id}.pdf"
+            pdf_path = os.path.join(PDF_DIR, pdf_filename)
+            try:
+                txt_to_pdf(txt_path, pdf_path)
+            except Exception as e:
+                logger.error(f"Failed to convert TXT to PDF: {txt_path} EXCEPTION={e}")
+                continue
+            try:
+                async with AsyncSessionLocal() as session:
+                    await session.execute(
+                        update(Book)
+                        .where(Book.id == book.id)
+                        .values(file_name=pdf_filename)
+                    )
+                    await session.commit()
+            except SQLAlchemyError as e:
+                logger.error(f"Failed to update database for book: {book.title} EXCEPTION={e}")
+                continue
 
-            async with AsyncSessionLocal() as session:
-                await session.execute(
-                    update(Book)
-                    .where(Book.id == book.id)
-                    .values(file_name=filename)
-                )
-                await session.commit()
-                logger.info(f"Successfully downloaded and saved: {filename}")
+            logger.info(f"✅ Downloaded TXT and generated PDF for: {book.title} (ID={book.id})")
 
 if __name__ == "__main__":
-    asyncio.run(load_book_test())
+    asyncio.run(load_books_txt_pdf())

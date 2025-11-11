@@ -9,51 +9,64 @@ from fastapi import HTTPException
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 async def detect_and_translate(text: str) -> str:
+    if not text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Input text is empty."
+        )
 
     try:
         lang = await asyncio.to_thread(detect, text)
     except Exception as e:
-        logger.warning(f"Language detection failed (Client Error): {e}")
+        logger.warning(f"Language detection failed: {e}")
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot detect language from the provided text. Ensure the text is not empty or too short."
+            detail="Cannot detect language. Ensure text is not empty or too short."
         )
 
-    try:
-        if lang == "pl":
-            def translate_sync():
-                inputs = language_tokenizer(text, return_tensors="pt", truncation=False, padding=True).to(device)
-                
-                with torch.no_grad():
-                    outputs = language_model.generate(**inputs, max_length=512)
+    if lang == "pl":
+        def translate_sync():
+            inputs = language_tokenizer(
+                text,
+                return_tensors="pt",
+                truncation=True,
+                max_length=512,
+                padding=True
+            ).to(device)
 
-                return language_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            if inputs.input_ids.size(1) == 0:
+                raise ValueError("Input tokenized to empty tensor. Check the input text.")
 
+            with torch.no_grad():
+                outputs = language_model.generate(**inputs, max_length=512)
+
+            return language_tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        try:
             translated_text = await asyncio.to_thread(translate_sync)
-            logger.debug(f"Translated from pl to en: {translated_text}")
-
+            logger.debug(f"Translated from PL to EN: {translated_text}")
             return translated_text
 
-        elif lang == "en":
-            logger.debug(f"Language is already English: {text}")
-            return text
-
-        else:
-            logger.warning(f"Unknown or unsupported language detected: {lang}")
+        except RuntimeError as e:
+            logger.error(f"ML Model (Translation) error: {e}")
             raise HTTPException(
-                status_code=400,
-                detail=f"Unsupported language detected: '{lang}'. Only Polish (pl) and English (en) are supported for matching."
+                status_code=500,
+                detail=f"Internal translation service error. Model failure: {e}"
+            )
+        except Exception as e:
+            logger.exception("Unexpected error during translation.")
+            raise HTTPException(
+                status_code=500,
+                detail="An unexpected server error occurred during translation."
             )
 
-    except RuntimeError as e:
-        logger.error(f"ML Model (Translation) error: {e}")
+    elif lang == "en":
+        logger.debug(f"Language is already English: {text}")
+        return text
+
+    else:
+        logger.warning(f"Unsupported language detected: {lang}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Internal translation service error. Model failure: {e}"
-        )
-    except Exception as e:
-        logger.exception(f"Unexpected error during translation process.")
-        raise HTTPException(
-            status_code=500,
-            detail="An unexpected server error occurred during translation."
+            status_code=400,
+            detail=f"Unsupported language: '{lang}'. Only Polish (pl) and English (en) are supported."
         )

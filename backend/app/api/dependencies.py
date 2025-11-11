@@ -2,6 +2,7 @@ import json
 import os
 
 import numpy as np
+from app.dal.book_dal import BookDAL
 from app.ml_models.models import (
     embedding_model,
     emotion_model,
@@ -10,6 +11,7 @@ from app.ml_models.models import (
     sentiment_model,
     sentiment_tokenizer
 )
+from app.services.book_service import BookService
 from app.services.embedding_service import EmbeddingService
 from app.core.config import settings
 
@@ -26,7 +28,7 @@ from app.matchers import (
 
 embedding_service: EmbeddingService | None = None
 
-def get_embedding_service():
+async def get_embedding_service():
     if embedding_service is None:
         raise RuntimeError("Embedding service not initialized yet")
     return embedding_service
@@ -58,7 +60,7 @@ tags_matcher: TagsMatcher | None = None
 hybrid_all_matcher: HybridAllMatcher | None = None
 hybrid_cascade_matcher: HybridCascadeMatcher | None = None  
 
-def get_matcher(matcher_type: MatcherType) -> Matcher:
+async def get_matcher(matcher_type: MatcherType) -> Matcher:
     singletons = {
         MatcherType.embedding: embedding_matcher,
         MatcherType.emotions: emotions_matcher,
@@ -100,3 +102,16 @@ def init_matchers():
         features_matcher=features_matcher,
         tags_matcher=tags_matcher
     )
+
+
+book_service: BookService | None = None
+
+async def get_book_service():
+    if book_service is None:
+        raise RuntimeError("Book service is initialized yet")
+    return book_service
+
+def init_book_service():
+    global book_service 
+
+    book_service = BookService()

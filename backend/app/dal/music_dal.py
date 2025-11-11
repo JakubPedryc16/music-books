@@ -4,15 +4,11 @@ from sqlalchemy.sql.expression import ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import load_only
 from sqlalchemy.exc import SQLAlchemyError
+from app.exceptions.DataAccessException import DataAccessException
 from app.models.music import Music
 from app.utils.logger import logger 
 
-class DataAccessException(Exception):
-    """Generyczny wyjątek dla błędów dostępu do danych."""
-    pass
-
 class MusicDAL:
-
     def __init__(self, session: AsyncSession):
         self.session = session
 
