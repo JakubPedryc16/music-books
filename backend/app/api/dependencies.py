@@ -1,6 +1,8 @@
 import json
 import os
 
+from app.services.global_music_context import GlobalMusicContext
+from app.matchers.multi_modal_evaluator import MultiModalEvaluator
 import numpy as np
 from app.dal.book_dal import BookDAL
 from app.ml_models.models import (
@@ -59,6 +61,7 @@ features_matcher: FeaturesMatcher | None = None
 tags_matcher: TagsMatcher | None = None
 hybrid_all_matcher: HybridAllMatcher | None = None
 hybrid_cascade_matcher: HybridCascadeMatcher | None = None  
+multi_modal_evaluator: MultiModalEvaluator | None = None
 
 async def get_matcher(matcher_type: MatcherType) -> Matcher:
     singletons = {
@@ -68,6 +71,7 @@ async def get_matcher(matcher_type: MatcherType) -> Matcher:
         MatcherType.tags: tags_matcher,
         MatcherType.hybrid: hybrid_all_matcher,
         MatcherType.hybrid_cascade: hybrid_cascade_matcher
+        
     }
 
     matcher = singletons.get(matcher_type)
@@ -83,24 +87,38 @@ def init_matchers():
     global tags_matcher
     global hybrid_all_matcher
     global hybrid_cascade_matcher
+    global multi_modal_evaluator
+
+    global_context = GlobalMusicContext() 
 
     embedding_matcher = EmbeddingMatcher(embedding_service)
     emotions_matcher = EmotionsMatcher(embedding_service)
-    features_matcher = FeaturesMatcher(embedding_service)
+    
+    features_matcher = FeaturesMatcher(embedding_service, context=global_context)
+    
     tags_matcher = TagsMatcher(embedding_service)
 
-    hybrid_all_matcher = HybridAllMatcher(
+    multi_modal_evaluator = MultiModalEvaluator(
         embedding_matcher=embedding_matcher,
         emotions_matcher=emotions_matcher,
         features_matcher=features_matcher,
         tags_matcher=tags_matcher
     )
 
+    hybrid_all_matcher = HybridAllMatcher(
+        embedding_matcher=embedding_matcher,
+        emotions_matcher=emotions_matcher,
+        features_matcher=features_matcher,
+        tags_matcher=tags_matcher,
+        multimodal_evaluator=multi_modal_evaluator
+    )
+
     hybrid_cascade_matcher = HybridCascadeMatcher(
         embedding_matcher=embedding_matcher,
         emotions_matcher=emotions_matcher,
         features_matcher=features_matcher,
-        tags_matcher=tags_matcher
+        tags_matcher=tags_matcher,
+        multimodal_evaluator=multi_modal_evaluator
     )
 
 

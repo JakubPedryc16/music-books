@@ -1,12 +1,12 @@
 import json
 from typing import override
 import numpy as np
-from app.dal.music_dal import MusicDAL
 from app.models.music import Music
 from app.services.embedding_service import EmbeddingService
 from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.matchers.matcher import Matcher
+from app.services.global_music_context import GlobalMusicContext
 
 
 class EmotionsMatcher(Matcher):
@@ -24,16 +24,14 @@ class EmotionsMatcher(Matcher):
         
         emotion_scores = await self.embeddingService.predict_emotions(text)
         text_emotion_vector = np.array([emotion_scores[label] for label in emotion_scores], dtype=np.float32)
-        music_list = []
         
-        if music_list_included is None:
-            musicDAL = MusicDAL(session)
-            music_list = await musicDAL.get_music_columns(
-                columns=[Music.id, Music.embedding_emotions],
-                filter_not_none=[Music.embedding_emotions]
-            )
-        else:
-            music_list = music_list_included
+        music_list = music_list_included
+        
+        if music_list is None:
+            context = GlobalMusicContext()
+            music_list = context.get_full_music_list()
+        
+        music_list = [m for m in music_list if m.embedding_emotions is not None]
 
         music_ids = []
         music_embeddings = []

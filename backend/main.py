@@ -6,6 +6,9 @@ import requests
 # RUN python -m nltk.downloader punkt averaged_perceptron_tagger
 
 from app.api.dependencies import init_book_service, init_embedding_service, init_matchers
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.db_async import AsyncSessionLocal
+from app.services.global_music_context import GlobalMusicContext
 from app.utils import global_exception_handler
 load_dotenv()
 
@@ -21,6 +24,12 @@ from app.utils.logger import logger
 async def lifespan(app: FastAPI):
     await init_db()
     init_embedding_service()  
+
+    context = GlobalMusicContext()
+    
+    async with AsyncSessionLocal() as session: 
+            await context.initialize(session)
+
     init_matchers() 
     init_book_service()
     yield             

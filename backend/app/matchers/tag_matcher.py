@@ -2,13 +2,13 @@ import json
 from typing import override
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from app.db.db_async import AsyncSessionLocal
 from app.models.music import Music
-from app.dal.music_dal import MusicDAL
 from app.services.embedding_service import EmbeddingService
 from app.matchers.matcher import Matcher
 from app.utils.tag_generator import TAGS
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.global_music_context import GlobalMusicContext # DODANY IMPORT
+
 
 class TagsMatcher(Matcher):
     def __init__(self, embeddingService: EmbeddingService):
@@ -23,18 +23,15 @@ class TagsMatcher(Matcher):
         music_list_included:list[Music] = None
     ) -> list[tuple[int, float]]:
         
-        
         tag_vector_dict = await self.embeddingService.create_tag_embedding(text)
         tag_vector = np.array([tag_vector_dict[tag] for tag in TAGS], dtype=np.float32)
-        music_list = []
-        if (music_list_included is None):
-            musicDAL = MusicDAL(session)
-            music_list = musicDAL.get_music_columns(
-                columns=[Music.id, Music.embedding_tags],
-                filter_not_none=[Music.embedding_tags]
-            )
-        else:
-            music_list = music_list_included
+        
+        music_list = music_list_included
+        if music_list is None:
+            context = GlobalMusicContext()
+            music_list = context.get_full_music_list()
+        
+        music_list = [m for m in music_list if m.embedding_tags is not None]
 
         music_ids = [music.id for music in music_list]
 
@@ -53,6 +50,6 @@ class TagsMatcher(Matcher):
             music_scored = list(zip(music_ids, sims))
             music_scored.sort(key=lambda x: x[1], reverse=True)
             return music_scored[:amount]
-        
+            
         except Exception as e:
             raise RuntimeError(f"Matching failed due to error in numerical calculation: {e}")

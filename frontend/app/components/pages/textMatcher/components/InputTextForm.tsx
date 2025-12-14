@@ -5,6 +5,15 @@ import { colors } from "~/colors";
 import api from "~/utils/api";
 import type { MatchTextParams } from "../../../models/match";
 
+export enum MatcherType {
+    embedding = "embedding",
+    emotions = "emotions",
+    features = "features",
+    tags = "tags",
+    hybrid = "hybrid",
+    hybrid_cascade = "hybrid_cascade",
+}
+
 const StyledForm = styled.form`
     display: flex;
     flex-direction: column;
@@ -35,6 +44,15 @@ const StyledInputContainer = styled.div`
 
     margin-bottom: 2rem;
 `
+const StyledSelectorContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 400px;
+    margin-bottom: 2rem;
+`;
 
 const StyledErrorContainer = styled.div`
     height: 20px;
@@ -95,21 +113,24 @@ const StyledLabel = styled.label`
     line-height: 20px;
     font-weight: 700;
 `
-
-const StyledInput = styled.input`
+// Styl dla input i select
+const StyledFormElement = `
     padding: 8px;
-
     background-color: ${colors.grey};
     border-radius: 5px;
     border: 2px solid ${colors.lightGrey};
     box-sizing: border-box; 
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.04);
-
+    
     &:focus {
         outline: none;
         border-color: ${colors.light};
     }
-`
+`;
+
+const StyledInput = styled.input`${StyledFormElement}`;
+const StyledSelect = styled.select`${StyledFormElement}`;
+
 
 type Props = {
     onSubmit: (params: MatchTextParams) => void;
@@ -121,6 +142,7 @@ const InputTextForm = ({onSubmit}: Props) => {
     const maxAmount = 10;
     const [text, setText] = useState<string>("");
     const [amount, setAmount] = useState<string>("");
+    const [matcherType, setMatcherType] = useState<MatcherType>(MatcherType.hybrid_cascade);
     const [error, setError] = useState<string | null>(null);
 
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -142,13 +164,17 @@ const InputTextForm = ({onSubmit}: Props) => {
             setAmount("");
         }
     }
+    
+    const handleMatcherTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setMatcherType(e.target.value as MatcherType);
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         onSubmit({
             text: text,
             amount: Number(amount) || 3,
-            matcher_type: "hybrid_cascade" 
+            matcher_type: matcherType 
         })
     }
     
@@ -159,10 +185,23 @@ const InputTextForm = ({onSubmit}: Props) => {
                 <StyledTextarea id="text" value={text} onChange={handleTextChange} placeholder="input text fragment"/>
                 <StyledLimitText>{text.length} / {maxLength}</StyledLimitText>
             </StyledTextareaContainer>
+
             <StyledInputContainer>
                 <StyledLabel htmlFor="amount">Input Titles Amount:</StyledLabel>
                 <StyledInput id="amount" value={amount} onChange={handleAmountChange} placeholder="amount 1-10"/>
             </StyledInputContainer>
+
+            <StyledSelectorContainer>
+                <StyledLabel htmlFor="matcher-type">Matcher Type:</StyledLabel>
+                <StyledSelect id="matcher-type" value={matcherType} onChange={handleMatcherTypeChange}>
+                    {Object.values(MatcherType).map((type) => (
+                        <option key={type} value={type}>
+                            {type}
+                        </option>
+                    ))}
+                </StyledSelect>
+            </StyledSelectorContainer>
+
             <StyledErrorContainer>{error}</StyledErrorContainer>
             <CustomButton type={"submit"} onClick={() => handleSubmit}>Submit</CustomButton>
         </StyledForm>

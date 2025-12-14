@@ -6,6 +6,7 @@ from app.models.music import Music
 from app.services.embedding_service import EmbeddingService
 from app.matchers.matcher import Matcher
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.global_music_context import GlobalMusicContext # NOWY IMPORT
 
 class EmbeddingMatcher(Matcher):
     def __init__(self, embeddingService: EmbeddingService):
@@ -24,13 +25,12 @@ class EmbeddingMatcher(Matcher):
         music_list = []
         
         if music_list_included is None:
-            music_dal = MusicDAL(session)
-            music_list = await music_dal.get_music_columns(
-                columns=[Music.id, Music.embedding],
-                filter_not_none= [Music.embedding]
-            )
+            context = GlobalMusicContext()
+            music_list = context.get_full_music_list()
         else:
             music_list = music_list_included
+
+        music_list = [m for m in music_list if m.embedding is not None]
 
         music_ids = [music.id for music in music_list]
         music_embeddings = [np.frombuffer(m.embedding, dtype=np.float32) for m in music_list]

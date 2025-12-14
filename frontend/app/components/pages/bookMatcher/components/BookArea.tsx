@@ -35,8 +35,6 @@ const normalizeText = (text: string) => {
     .join('\n');
 }
 
-
-
 const BookArea = ({ text }: Props) => {
   const formattedText = normalizeText(text);
 
